@@ -163,6 +163,11 @@ define([
                         domCtr.destroy(dom.byId("filter-usage"));
                         this.createFilterFloorUI(this.container);
                         this.createFilterUsageUI(this.container);
+                    } else {
+                        domCtr.destroy(dom.byId("filterAreaMin"));
+                        domCtr.destroy(dom.byId("AreaMaxText"));
+                        domCtr.destroy(dom.byId("AreaMinText"));
+                        this.createFilterAreaUI(this.container);
                     }
                 }
             },
