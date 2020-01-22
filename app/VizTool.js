@@ -230,6 +230,7 @@ define([
                 } else {
                     settings.layer1.definitionExpression = undefined;
                     settings.layer1.renderer = null;
+                    settings.layer2.visible = false;
                 }
 
                 // visualization
@@ -264,6 +265,9 @@ define([
                     chartMaker.createChart(this.view, initCharts.usage, settings, "city", function (state) {
                         this.menu.setLoadingState("loaded");
                     }.bind(this));
+                    statsMaker.createChart(initCharts.stats, function (state) {
+                        this.menu.setLoadingState("loaded");
+                    }.bind(this));
                 }
                 if (vizName === "area") {
                     settings.layer1.renderer = applyRenderer.createRendererVV(initData, settings.areaname);
@@ -272,6 +276,9 @@ define([
                     domStyle.set(dom.byId("statsDiv"), { "opacity": 0 });
 
                     barMaker.createChart(initData, initCharts.area, settings, "city", this.view, function (state) {
+                        this.menu.setLoadingState("loaded");
+                    }.bind(this));
+                    statsMaker.createChart(initCharts.stats, function (state) {
                         this.menu.setLoadingState("loaded");
                     }.bind(this));
                 }
