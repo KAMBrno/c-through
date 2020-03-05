@@ -106,7 +106,34 @@ define([
             },
 
             init: function (settings) {
+                           var mobilDetector = detectmob();
+                           function detectmob() {
+                               if (navigator.userAgent.match(/Android/i) ||
+                                   navigator.userAgent.match(/webOS/i) ||
+                                   navigator.userAgent.match(/iPhone/i) ||
+                                   navigator.userAgent.match(/iPad/i) ||
+                                   navigator.userAgent.match(/iPod/i) ||
+                                   navigator.userAgent.match(/BlackBerry/i) ||
+                                   navigator.userAgent.match(/Windows Phone/i)
+                               ) {
+                                   return true;
+                               } else {
+                                   return false;
+                               }
+                           }
 
+                           if(mobilDetector === true){
+                            
+                            var toolsMenu = document.querySelector("#toolsMenu");
+                            var vie_wDiv = document.querySelector("#viewDiv");
+                            vie_wDiv.style.width = "100%";
+                            toolsMenu.style.top = "85%";
+                            toolsMenu.style.height = "50%";
+                            toolsMenu.style.zIndex = "1";
+                            toolsMenu.style.backgroundColor = "white";
+                            toolsMenu.style.width = "100%";
+                        }
+           
                 // destroy welcome page when app is started
                 domCtr.destroy("welcome");
 
@@ -183,7 +210,7 @@ define([
 
                     this.settings.layer1.visible = true;
                     this.settings.layer2.visible = false;
-
+                    
                     // retrieve distinct values of usage attribute from feature service to create UI (filter dropdowns)
                     queryTools.distinctValues(this.settings.layer1, this.settings.usagename, this.settings.OIDname, function (distinctValues) {
 
@@ -212,6 +239,7 @@ define([
                                 combinedFilteredFeatures: undefined
                             }
                         });
+                        
                     }.bind(this));
 
                 }.bind(this)).otherwise(function (err) {

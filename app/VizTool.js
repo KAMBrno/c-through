@@ -90,6 +90,21 @@ define([
             },
 
             createUI: function (container) {
+                var mobilDetector = detectmob();
+                function detectmob() {
+                    if (navigator.userAgent.match(/Android/i) ||
+                        navigator.userAgent.match(/webOS/i) ||
+                        navigator.userAgent.match(/iPhone/i) ||
+                        navigator.userAgent.match(/iPad/i) ||
+                        navigator.userAgent.match(/iPod/i) ||
+                        navigator.userAgent.match(/BlackBerry/i) ||
+                        navigator.userAgent.match(/Windows Phone/i)
+                    ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
                 this.title = domCtr.create("div", { className: "titleViz", id: "titleViz", innerHTML: "Visualisation by" }, container);
                 this.label1 = domCtr.create("div", { className: "labelViz", id: "viz-white", innerHTML: "none" }, container);
                 this.label2 = domCtr.create("div", { className: "labelViz", id: "viz-usage", innerHTML: "usage" }, container);
@@ -107,6 +122,18 @@ define([
                 domCtr.create("div", { id: "averagefloor", innerHTML: "<b>Average Floor Number:     </b>" }, "statsDiv");
                 domCtr.create("div", { id: "maxfloor", innerHTML: "<b>Max Floor Number:     </b>" }, "statsDiv");
 
+                if(mobilDetector === true){
+                    this.label1.style.width = "50px";
+                    this.label2 .style.width = "50px";
+                    this.label3.style.width = "50px";
+                    this.label2 .style.left = "100px";
+                    this.label3.style.left = "180px";
+                    this.chartDiv.style.width = "100%";
+                    this.chartDiv.style.width = "100%";
+                    this.statsDiv.style.width = "100%";
+                    this.title.style.width = "90%";
+                }
+               
             },
 
             updateUI: function (state) {
