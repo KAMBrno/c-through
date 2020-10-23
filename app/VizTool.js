@@ -24,6 +24,8 @@
  * Title: Visualization Tool
  * Author: Lisa Staehli
  * Date: 04/24/17
+ * Modified: Josef Divín
+ * Date: 10/23/20
  * Description: changes renderer of the active layer
  * according to selection and filter. Shows statistics
  * and adjusts charts according to selection and filter.
@@ -32,6 +34,8 @@
 define([
     "esri/core/declare",
     "esri/tasks/support/Query",
+    "esri/widgets/Legend",
+    "esri/widgets/Expand",
 
     "dojo/dom-construct",
     "dojo/_base/window",
@@ -48,7 +52,8 @@ define([
     "c-through/support/queryTools"
 
 ], function (
-    declare, Query,
+    declare, Query, Legend,
+    Expand,
     domCtr, win, dom, domStyle, on,
     applyRenderer,
     chartMaker, barMaker, statsMaker,
@@ -105,22 +110,22 @@ define([
                         return false;
                     }
                 }
-                this.title = domCtr.create("div", { className: "titleViz", id: "titleViz", innerHTML: "Visualisation by" }, container);
-                this.label1 = domCtr.create("div", { className: "labelViz", id: "viz-white", innerHTML: "none" }, container);
-                this.label2 = domCtr.create("div", { className: "labelViz", id: "viz-usage", innerHTML: "usage" }, container);
-                this.label3 = domCtr.create("div", { className: "labelViz", id: "viz-area", innerHTML: "area" }, container);
+                this.title = domCtr.create("div", { className: "titleViz", id: "titleViz", innerHTML: "Roztřídit podle" }, container);
+                this.label1 = domCtr.create("div", { className: "labelViz", id: "viz-white", innerHTML: "žádné" }, container);
+                this.label2 = domCtr.create("div", { className: "labelViz", id: "viz-usage", innerHTML: "funkce" }, container);
+                this.label3 = domCtr.create("div", { className: "labelViz", id: "viz-area", innerHTML: "plocha" }, container);
 
                 this.statsDiv = domCtr.create("div", { id: "statsDiv", className: "statsDiv" }, container);
                 this.chartDiv = domCtr.create("div", { id: "chartDiv", className: "chartDiv" }, container);
 
 
-                domCtr.create("div", { id: "titleStats", innerHTML: "Statistics" }, "statsDiv");
-                domCtr.create("div", { id: "numberofunits", innerHTML: "<b>Number of Units:     </b>" }, "statsDiv");
-                domCtr.create("div", { id: "usage", innerHTML: "<b>Most common usage:       </b>" }, "statsDiv");
-                domCtr.create("div", { id: "averagearea", innerHTML: "<b>Average Area:      </b>" }, "statsDiv");
-                domCtr.create("div", { id: "maxarea", innerHTML: "<b>Max Area:      </b>" }, "statsDiv");
-                domCtr.create("div", { id: "averagefloor", innerHTML: "<b>Average Floor Number:     </b>" }, "statsDiv");
-                domCtr.create("div", { id: "maxfloor", innerHTML: "<b>Max Floor Number:     </b>" }, "statsDiv");
+                domCtr.create("div", { id: "titleStats", innerHTML: "Statistika" }, "statsDiv");
+                domCtr.create("div", { id: "numberofunits", innerHTML: "<b>Počet prvků:     </b>" }, "statsDiv");
+                domCtr.create("div", { id: "usage", innerHTML: "<b>Nejvíce zastoupená kategorie:       </b>" }, "statsDiv");
+                domCtr.create("div", { id: "averagearea", innerHTML: "<b>Průměrná plocha:      </b>" }, "statsDiv");
+                domCtr.create("div", { id: "maxarea", innerHTML: "<b>Maximální plocha:      </b>" }, "statsDiv");
+                domCtr.create("div", { id: "averagefloor", innerHTML: "<b>Průměrný počet podlaží:    </b>" }, "statsDiv");
+                domCtr.create("div", { id: "maxfloor", innerHTML: "<b>Maximální počet podlaží:     </b>" }, "statsDiv");
 
                 if(mobilDetector === true){
                     this.label1.style.width = "50px";
@@ -178,17 +183,73 @@ define([
             },
 
             clickHandler: function () {
+                var mobilDetector = detectmob();
+                function detectmob() {
+                    if (navigator.userAgent.match(/Android/i) ||
+                        navigator.userAgent.match(/webOS/i) ||
+                        navigator.userAgent.match(/iPhone/i) ||
+                        navigator.userAgent.match(/iPad/i) ||
+                        navigator.userAgent.match(/iPod/i) ||
+                        navigator.userAgent.match(/BlackBerry/i) ||
+                        navigator.userAgent.match(/Windows Phone/i)
+                    ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                var legend;
+                var bgExpand;
+                var startValue;
 
                 on(this.label1, "click", function (evt) {
                     this.updateVizState({ name: "white" });
+                    if(mobilDetector === false){
+                        this.settings.view.ui.remove(bgExpand, "bottom-right");
+                        if (legend) {
+                            if (legend.destroyed === false) {
+                                legend.destroy();
+                            }
+                        }
+                    }
                 }.bind(this));
 
                 on(this.label2, "click", function (evt) {
                     this.updateVizState({ name: "usage" });
+                    if(mobilDetector === false){
+                        if (startValue !== "start") {
+                            startValue = "start";
+                            bgExpand = new Expand({
+                              content: legend,
+                              expanded: true
+                            });
+                          }
+                
+                          legend = new Legend({
+                            view: this.settings.view,
+                            layerInfos: [
+                              {
+                                title: this.settings.titleOfLegend,
+                                layer: this.settings.layer1
+                              }
+                            ]
+                          });
+                          bgExpand.content = legend;
+                          this.settings.view.ui.add(bgExpand, "bottom-right");
+                          bgExpand.expanded = true;
+                        }
                 }.bind(this));
 
                 on(this.label3, "click", function (evt) {
                     this.updateVizState({ name: "area" });
+                    if(mobilDetector === false){
+                        this.settings.view.ui.remove(bgExpand, "bottom-right");
+                        if (legend) {
+                          if (legend.destroyed === false) {
+                            legend.destroy();
+                          }
+                        }
+                    }
                 }.bind(this));
 
             },
@@ -200,7 +261,7 @@ define([
                     var query = settings.layer1.createQuery();
 
                     query.returnGeometry = false;
-                    query.outFields = [settings.OIDname, settings.usagename, settings.areaname, settings.floorname, settings.buildingIDname];
+                    query.outFields = [settings.OIDname, settings.usagename, settings.areaname, settings.areaname2, settings.floorname, settings.buildingIDname];
 
                     settings.layer1.queryFeatures(query).then(function (result) {
                         var currentResult = result.features;
@@ -297,7 +358,7 @@ define([
                     }.bind(this));
                 }
                 if (vizName === "area") {
-                    settings.layer1.renderer = applyRenderer.createRendererVV(initData, settings.areaname);
+                    settings.layer1.renderer = applyRenderer.createRendererVV(initData, settings.areaname2);
 
                     domStyle.set(dom.byId("chartDiv"), { "opacity": 1 });
                     domStyle.set(dom.byId("statsDiv"), { "opacity": 0 });
@@ -320,7 +381,7 @@ define([
                 var query = settings.layer1.createQuery();
 
                 query.returnGeometry = false;
-                query.outFields = [settings.OIDname, settings.usagename, settings.areaname, settings.floorname, settings.buildingIDname];
+                query.outFields = [settings.OIDname, settings.usagename, settings.areaname, settings.areaname2, settings.floorname, settings.buildingIDname];
 
                 settings.layer1.queryFeatures(query).then(function (result) {
 
@@ -354,7 +415,7 @@ define([
                         });
                     }
                     if (vizName === "area") {
-                        settings.layer1.renderer = applyRenderer.createRendererVV(selection, settings.areaname);
+                        settings.layer1.renderer = applyRenderer.createRendererVV(selection, settings.areaname2);
 
                         domStyle.set(dom.byId("chartDiv"), { "opacity": 1 });
                         domStyle.set(dom.byId("statsDiv"), { "opacity": 0 });

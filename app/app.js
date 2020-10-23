@@ -24,6 +24,8 @@
  * Title: App Configuration Script
  * Author: Lisa Staehli
  * Date: 04/24/17
+ * Modified: Josef Divín
+ * Date: 23/2´10/20
  * Description: Used to configure and link a webscene
  * with corresponding attributes for visualization
  * and statistics. A webscene with a scene service 
@@ -45,6 +47,9 @@ define([
     "esri/Basemap",
 
     "esri/widgets/BasemapToggle",
+    "esri/PopupTemplate",
+    "esri/widgets/Daylight",
+    "esri/widgets/Expand",
     "esri/widgets/Home",
 
     "dojo/dom",
@@ -62,7 +67,7 @@ define([
 ], function (
     declare, esriConfig,
     WebScene, SceneView, SceneLayer, Basemap,
-    BasemapToggle, Home,
+    BasemapToggle, PopupTemplate,  Daylight, Expand, Home,
     dom, on, domCtr, win, domStyle,
     Search,
     ToolsMenu, Welcome, queryTools) {
@@ -70,32 +75,26 @@ define([
         // application settings
         var settings_demo = {
             name: "Demo",
-            url: "http://zurich.maps.arcgis.com",           // portal URL for config
-            webscene: "0af10b5e35ed4a5bbe095aa76b14b786",   // portal item ID of the webscene
-            usagename: "usage",                             // usage attribute (string)
-            floorname: "floorID",                           // floor attribute (int)
-            OIDname: "OBJECTID",                            // objectid
-            buildingIDname: "buildingID",                   // building attribute (int)
-            areaname: "unitarea",                           // area attribute (float)
+            url: "https://gis.brno.cz/esri",           // portal URL for config
+            webscene: "09467ef90fb14641b2ea19379909da79",   // portal item ID of the webscene
+            titleOfLegend: "Funkce:",
+            titleOfPopUpButon: "Podat návrh na opravu funkčního využití",
+            usagename: "floorusage",                             // usage attribute (string)
+            floorname: "floorname",                           // floor attribute (int)
+            OIDname: "idbud",                            // objectid
+            buildingIDname: "idobject",                   // building attribute (int)
+            areaname: "areafloat",  
+            areaname2: "area3",                         // area attribute (float)
             color: [                                        // color ramp for unique value renderer
-                    [178, 171, 210, 1],                     
-                    [253, 174, 97, 1],
-                    [50, 136, 189, 1],
-                    [102, 194, 165, 1],
-                    [230, 245, 152, 1],
-                    [213, 62, 79, 1],
-                    [94, 79, 162, 1],
-                    [254, 224, 139, 1],
-                    [253, 174, 97, 1],
-                    [135, 135, 135, 1],
-                    [255, 255, 153, 1],
-                    [185, 185, 185, 1],
-                    [171, 221, 164, 1],
-                    [202, 178, 214, 1],
-                    [251, 128, 114, 1],
-                    [214, 96, 77, 1],
-                    [209, 229, 240, 1],
-                    [254, 224, 182, 1]
+                [255,222,220, 1],
+                [255,225,245, 1],
+                [214, 195, 182, 1],
+                [163, 73, 164,1 ],
+                [181, 112, 74, 1],
+                [255,255, 115 ,1 ],
+                [237, 0, 0, 1],
+                [245, 156, 155, 1],
+                [127, 127, 127, 1]
                 ]
         };
 
@@ -191,7 +190,36 @@ define([
                 var homeWidget = new Home({
                     view: this.view
                 });
-                this.view.ui.add(homeWidget, "top-left");
+
+                const daylightWidget = new Daylight({
+                    view: this.view,
+                    // plays the animation twice as fast than the default one
+                    playSpeedMultiplier: 2,
+                    // disable the timezone selection button
+                    visibleElements: {
+                      timezone: false
+                    }
+                  });
+          
+                  // add the daylight widget inside of Expand widget
+                  const expand = new Expand({
+                    expandIconClass: "esri-icon-time-clock",
+                    expandTooltip: "Zobrazit denní dobu",
+                    view: this.view,
+                    content: daylightWidget,
+                    expanded: false
+                  });
+
+
+                var basemapToggle = new BasemapToggle({
+                    view: this.view,  // The view that provides access to the map's "streets" basemap
+                    nextBasemap: "dark-gray"  // Allows for toggling to the "hybrid" basemap
+                  });
+                  this.view.ui.add(basemapToggle, {
+                    position: "top-right"
+                  });
+                  this.view.ui.add(expand, "top-right");
+                this.view.ui.add(homeWidget, "top-right");
 
                 // wait until view is loaded
                 this.view.when(function () {
@@ -208,8 +236,46 @@ define([
                     });
                     this.scene.add(this.settings.layer2);
 
+                    // add view to the settings
+                    this.settings.view = this.view;
+                    this.settings.titleOfLegend = settings_demo.titleOfLegend;
+                    this.settings.layer1.popupEnabled = false; 
                     this.settings.layer1.visible = true;
                     this.settings.layer2.visible = false;
+
+                    if (mobilDetector === true) {
+
+                        var infoButoon = document.createElement("div");
+                        infoButoon.classList.add("infoButoon")
+                        var infoButoonIcon = document.createElement("div");
+                        //infoButoon.src = "img/info.png";
+                        infoButoon.appendChild(infoButoonIcon);
+                        infoButoonIcon.id = "icons";
+                        infoButoonIcon.classList.add("esri-icon-chart");
+                        infoButoonIcon.classList.add("active");
+                        infoButoon.classList.add("esri-widget--button");
+                        this.view.ui.add(infoButoon, "top-left");
+                        var toolsMenu = document.querySelector("#toolsMenubox");
+                        var textBox = document.querySelector("#textBox");
+                        var infobutonIcon =  document.querySelector("#icons");
+                        textBox.style.display = "block";
+                        toolsMenu.style.display = "none";
+                        function togleTextpanel(){
+                            
+                            if(infobutonIcon.classList[1] ==="active"){
+
+                                infobutonIcon.classList.remove("active");
+                                textBox.style.display = "none";
+                                toolsMenu.style.display = "block";
+                            }else{
+                                infobutonIcon.classList.add("active");
+                                textBox.style.display = "block";
+                                toolsMenu.style.display = "none";
+                            }
+                        }
+                        infobutonIcon.addEventListener("click", togleTextpanel)
+
+                    }
                     
                     // retrieve distinct values of usage attribute from feature service to create UI (filter dropdowns)
                     queryTools.distinctValues(this.settings.layer1, this.settings.usagename, this.settings.OIDname, function (distinctValues) {
@@ -249,8 +315,8 @@ define([
             },
 
             getSettingsFromUser: function (settings) {
-                if (settings === "demo"){
-                    dom.byId("headerTitle").innerHTML = "c-through Demo";
+                if (settings === "budovy_v_brne"){
+                    dom.byId("headerTitle").innerHTML = "c-through / Budovy v Brně";
                     return settings_demo;
                 }
             }

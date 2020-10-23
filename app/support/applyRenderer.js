@@ -54,13 +54,6 @@ define([
 
             createRenderer: function (values, color, fieldname) {
                 return new UniqueValueRenderer({
-                    defaultSymbol: new MeshSymbol3D({
-                        symbolLayers: [new FillSymbol3DLayer({
-                            material: {
-                                color: [135, 135, 135, 0.2]
-                            }
-                        })]
-                    }),
                     defaultLabel: "N.A.",
                     field: fieldname,
                     uniqueValueInfos: this.createValueInfos(values, color)

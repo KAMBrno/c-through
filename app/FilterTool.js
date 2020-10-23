@@ -190,9 +190,9 @@ define([
 
             createUI: function (container) {
 
-                this.titleFilter = domCtr.create("div", { className: "titleFilter", id: "titleFilter", innerHTML: "Filter by" }, container);
-                domCtr.create("div", { className: "titleFilter", id: "titleAreaMin", innerHTML: "Min Area" }, container);
-                this.areaMaxFilter = domCtr.create("div", { className: "titleFilter", id: "titleAreaMax", innerHTML: "Max Area" }, container);
+                this.titleFilter = domCtr.create("div", { className: "titleFilter", id: "titleFilter", innerHTML: "Filtrovat podle" }, container);
+                domCtr.create("div", { className: "titleFilter", id: "titleAreaMin", innerHTML: "Min. Plocha (m<sup>2</sup>)" }, container);
+                this.areaMaxFilter = domCtr.create("div", { className: "titleFilter", id: "titleAreaMax", innerHTML: "Max. Plocha (m<sup>2</sup>)" }, container);
 
                 this.reset = domCtr.create("div", { className: "button", id: "reset", innerHTML: "Reset" }, container);
 
@@ -218,8 +218,11 @@ define([
                 this.LevelFilterContainer = domCtr.create("div", { className: "FilterLabel", id: "filter-floors" }, container);
 
                 queryTools.distinctValues(this.settings.layer1, this.settings.floorname, this.settings.OIDname, function (distinctValues) {
-                    distinctValues.sort();
-                    distinctValues.unshift("Select Floor");
+                    function sortNumber(a, b) {
+                        return a - b;
+                    }
+                    distinctValues.sort(sortNumber);
+                    distinctValues.unshift("Vyber podlaží");
 
                     this.setDropdown("FloorLevel", distinctValues, this.LevelFilterContainer, function (floorSelector) {
                         this.floorSelector = floorSelector;
@@ -241,7 +244,7 @@ define([
 
                 queryTools.distinctValues(this.settings.layer1, this.settings.usagename, this.settings.OIDname, function (distinctValues) {
                     distinctValues.sort();
-                    distinctValues.unshift("Select Usage");
+                    distinctValues.unshift("Vyber kategorii");
 
                     this.setDropdown("Usage", distinctValues, this.UsageFilterContainer, function (usageSelector) {
                         this.usageSelector = usageSelector;
@@ -280,6 +283,10 @@ define([
                         return a - b;
                     });
 
+                    if(distinctValues.length === 0){
+                        return
+                    }
+
                     max = Math.ceil(distinctValues[distinctValues.length - 1]);
                     min = Math.floor(distinctValues[0]);
 
@@ -293,7 +300,6 @@ define([
                     this.sliderDomNode = domCtr.create("div", {}, filterAreaWrapper);
 
                     if (min === max) {
-                        alert("No area range can be displayed because there is only one feature filtered.");
 
                     } else {
 
@@ -318,8 +324,8 @@ define([
                     this.sliderInstance.on("end", function (values) {
                         this.upper = Math.round(values[1]);
                         this.lower = Math.round(values[0]);
-                        areaMaxText.value = this.upper;
-                        areaMinText.value = this.lower;
+                        areaMaxText.value = this.upper.toLocaleString();
+                        areaMinText.value = this.lower.toLocaleString();
                         this.applyFilter(this.settings, this.state, this.menu, this.lower, this.upper, function (selection) {
                             this.updateFilterState("area", selection);
                         }.bind(this));
@@ -380,6 +386,9 @@ define([
 
                 on(nameSelector, "change", function () {
                     this.updateFilterFeatures(nameSelector, fieldname, "floor");
+                    if(this.state.usageFeatures=== undefined && this.state.floorFeatures=== undefined){
+                        this.updateFilterFeatures(nameSelector, fieldname, "none");
+                    }
                 }.bind(this));
             },
 
@@ -387,6 +396,9 @@ define([
 
                 on(nameSelector, "change", function () {
                     this.updateFilterFeatures(nameSelector, fieldname, "usage");
+                    if(this.state.usageFeatures=== undefined && this.state.floorFeatures=== undefined){
+                        this.updateFilterFeatures(nameSelector, fieldname, "none");
+                    }
                 }.bind(this));
             },
 

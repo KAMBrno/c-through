@@ -30,7 +30,7 @@
  * additionally supports multiple selection 
  * by holding the SHIFT key.
  */
-
+var buildingIDList = [];
 define([
     "esri/core/declare",
     "esri/tasks/support/Query",
@@ -65,7 +65,7 @@ define([
             },
 
             createUI: function () {
-                this.label = domCtr.create("div", { className: "labelSelect", id: "labelSelect", innerHTML: "Selection" }, this.container);
+                this.label = domCtr.create("div", { className: "labelSelect", id: "labelSelect", innerHTML: "Výběr" }, this.container);
                 this.numberofbuildings = domCtr.create("div", { id: "buildingInfo", innerHTML: "" }, this.container);
 
             },
@@ -92,15 +92,15 @@ define([
             updateUI: function (state) {
 
                 if (state === "city") {
-                    this.label.innerHTML = "Selection: City Level";
+                    this.label.innerHTML = "Výběr: Celoměstský";
                 }
 
                 if (state === "building") {
-                    this.label.innerHTML = "Selection: Building Level";
+                    this.label.innerHTML = "Výběr: Konkrétní budova";
                 }
 
                 if (state === "multiple buildings") {
-                    this.label.innerHTML = "Selection: Multiple Buildings";
+                    this.label.innerHTML = "Výběr: Konkrétní budovy";
                 }
             },
 
@@ -169,7 +169,7 @@ define([
 
             processGraphic: function (graphic, callback) {
 
-                var selectedOID = graphic.attributes[this.settings.OIDname];
+                var selectedOID = graphic.attributes.objectid;
 
                 var query = new Query();
 
@@ -183,9 +183,20 @@ define([
                         console.log("Wrong ObjectID");
                     }
 
-                    var buildingID = results.features[0].attributes[this.settings.buildingIDname];
+                    var buildingID = results.features[0].attributes.idobject;
 
-                    callback(buildingID);
+                    buildingIDList.push(buildingID);
+                    if (buildingIDList.length === 2) {
+                        var prvniPrvek = buildingIDList[0];
+                        var druhyPrvek = buildingIDList[1];
+                        var vysledek = prvniPrvek / druhyPrvek;
+                        if (vysledek !== 1) {
+                            callback(buildingID);
+                        }
+                        buildingIDList.shift();
+                    } else {
+                        callback(buildingID);
+                    }
 
                 }.bind(this)).otherwise(function (err) {
                     console.error(err);

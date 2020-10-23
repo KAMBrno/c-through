@@ -1,4 +1,13 @@
 # c-through
+<img src="img/c_through_Brno.png" alt="">
+
+It is a modified application for visualization of results from the survey of buildings in Brno. Below is a demo version of the application.
+
+
+
+[View it live](http://webmaps.kambrno.cz/webmaps.kambrno.cz/TEST/Aplikcae_Portal_10_03_2020_Bez_WelcomePage/Asset/c-through-master/)
+
+The buildings in Brno are based on the C-through project, see below.
 
 ![screenshot](https://cloud.githubusercontent.com/assets/27951811/25848186/7a69ac2a-34b9-11e7-852c-568a277ae0fd.png)
 

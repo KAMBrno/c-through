@@ -86,7 +86,6 @@ define([
                 this.containerViz = domCtr.create("div", { className: "containerViz" }, dom.byId("toolsMenuInnerBox"));
                 this.containerFilter = domCtr.create("div", { className: "containerFilter", id: "containerFilter" }, dom.byId("toolsMenuInnerBox"));
                 var arrowUp = document.querySelector(".arrowUp");
-                var containerSelect = document.querySelector(".containerSelect");
                 if(mobilDetector === true){
                     
                     arrowUp.style.display = "inline-block";
@@ -96,9 +95,9 @@ define([
                     toolsMenu.style.left = "0px";
                     toolsMenu.style.height= "0px";
                     toolsMenu.style.width= windowWitht + "px";
-                   // toolsMenu.style.top= windowHitht - 140 + "px";
-                    //viewDiv.style.height = windowHitht - 150 + "px";
-                //    viewDiv.style.paddingTop = "50px";
+                    toolsMenu.style.top= windowHitht - 120 + "px";
+                    viewDiv.style.height = windowHitht - 150 + "px";
+                    viewDiv.style.paddingTop = "50px";
                     toolsMenuInnerBox.style.overflow = "unset";
                     this.containerViz.style.width = "80%";
                     this.containerFilter.style.width = "90%";
@@ -107,16 +106,10 @@ define([
                     
                     function portapbleLandscape(){
                         if(windowWitht > windowHitht){
-                            containerSelect.style.top = "30px"; 
-                            toolsMenuInnerBox.style.bottom = "";
-                            toolsMenuInnerBox.style.height = "";
                             arrowUp.style.marginLeft = windowWitht / 2 + "px";
                             toolsMenu.style.top= windowHitht - 40 + "px";
                             viewDiv.style.height = windowHitht - 30 + "px";
                         }else{
-                            containerSelect.style.top = "10px"; 
-                            toolsMenuInnerBox.style.bottom = "1px";
-                            toolsMenuInnerBox.style.height = "20px";
                             arrowUp.style.marginLeft = windowWitht / 2 + "px";
                             toolsMenu.style.top= windowHitht - 120  + "px";
                             viewDiv.style.height = windowHitht - 150 + "px";
@@ -134,10 +127,10 @@ define([
                 }else{
                     
                     var windowHitht = document.documentElement.clientHeight;
-                    toolsMenuInnerBox.style.height = windowHitht - 50 + "px";
+                    toolsMenuInnerBox.style.height = windowHitht + "px";
                     window.addEventListener("resize", function(){
                         windowHitht = document.documentElement.clientHeight;
-                        toolsMenuInnerBox.style.height = windowHitht - 50 + "px";
+                        toolsMenuInnerBox.style.height = windowHitht + "px";
                     });
                 }
             },

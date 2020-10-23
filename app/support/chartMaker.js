@@ -17,6 +17,8 @@
    See the License for the specific language governing permissions and
 
    limitations under the License.
+   ​Modified: Josef Divín
+   Date: 23/10/20
    ​
    */
 
@@ -73,7 +75,7 @@ define([
                 var groupPercentValue = 0;
 
                 if (settings.name !== "Zurich") {
-                    groupPercentValue = "2";
+                    groupPercentValue = "0";
                 }
 
                 var chart = AmCharts.makeChart("chartDiv", {
@@ -87,10 +89,14 @@ define([
                     "startRadius": 70,
                     "fontSize": 12,
                     "fontFamily": "Avenir LT W01 65 Medium",
-                    "radius": 70,
+                    "radius": 150,
                     "marginTop": 100,
                     "pieAlpha": 0.8,
                     "sequencedAnimation": true,
+                    "labelText": "",
+                    "decimalSeparator": ",",
+                    "thousandsSeparator": " ",
+                    "balloonText": "[[title]]: [[percents]]% ([[value]] m<sup>2</sup>)",
                     "balloon": {
                         "fixedPosition": true
                     },

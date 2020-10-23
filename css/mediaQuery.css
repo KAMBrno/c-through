@@ -1,0 +1,40 @@
+@media only screen and (max-width: 1400px) {
+    #esri-logo {
+      left: 300px;
+    }
+    #description1 {
+      right: 300px;
+    }
+    #description2 {
+      right: 300px;
+    }
+  }
+  @media only screen and (max-width: 960px) {
+    #esri-logo {
+      left: 100px;
+    }
+    #description1 {
+      right: 100px;
+    }
+    #description2 {
+      right: 100px;
+    }
+  }
+  
+  @media only screen and (max-width: 600px) {
+    #esri-logo {
+      left: 50px;
+    }
+    #description1 {
+      right: 50px;
+    }
+    #description2 {
+      right: 50px;
+    }
+  }
+  
+  @media only screen and (max-height: 600px) {
+    #description2 {
+      top: 69%;
+    }
+  }

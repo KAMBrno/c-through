@@ -17,6 +17,8 @@
    See the License for the specific language governing permissions and
 
    limitations under the License.
+   ​Modified: Josef Divín
+   Date: 10/23/20
    ​
    */
 
@@ -154,13 +156,13 @@ define([
 
             createChart: function(data, callback){
 
-                dom.byId("buildingInfo").innerHTML = "Number of Buildings: " + data.numberofBuildings;
-                dom.byId("numberofunits").innerHTML = "<b>Number of Units:</b>      " + data.numberofUnits;
-                dom.byId("usage").innerHTML = "<b>Most common usage:</b>        " + data.mostCommonUsage.usage;
-                dom.byId("averagearea").innerHTML = "<b>Average Area:</b>       " + data.averageArea + " m2";
-                dom.byId("maxarea").innerHTML = "<b>Max Area:</b>       " + data.areaMax + " m2";
-                dom.byId("averagefloor").innerHTML = "<b>Average Floor Number:</b>      " + data.averageFloor;
-                dom.byId("maxfloor").innerHTML = "<b>Max Floor Number:</b>      " + data.floorMax;
+                dom.byId("buildingInfo").innerHTML = "Počet budov: " + data.numberofBuildings.toLocaleString();
+                dom.byId("numberofunits").innerHTML = "<b>Počet prvků:</b>      " + data.numberofUnits.toLocaleString();
+                dom.byId("usage").innerHTML = "<b>Nejvíce zastoupená kagegorie:</b>        " + data.mostCommonUsage.usage;
+                dom.byId("averagearea").innerHTML = "<b>Průměrná plocha:</b>       " + data.averageArea.toLocaleString() + " m<sup>2</sup>";
+                dom.byId("maxarea").innerHTML = "<b>Maximální plocha:</b>       " + data.areaMax.toLocaleString() + " m<sup>2</sup>";
+                dom.byId("averagefloor").innerHTML = "<b>Průměrný počet podlaží:</b>      " + data.averageFloor;
+                dom.byId("maxfloor").innerHTML = "<b>Maximální počet podlaží:</b>      " + data.floorMax;
 
                 callback("loaded");
 
