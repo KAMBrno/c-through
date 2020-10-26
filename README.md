@@ -1,4 +1,4 @@
-# c-through
+# c-through / Brno
 <img src="img/c_through_Brno.png" alt="">
 
 It is a modified application for visualization of results from the survey of buildings in Brno. Below is a demo version of the application.
